@@ -1,7 +1,8 @@
 :root {
-  --std-border: 1px solid rgb(139, 139, 139);
+  --std-border: 1px solid rgb(125, 121, 196);
   --light-border: 1px solid rgb(207, 207, 207);
   --font-color: rgb(32, 32, 32);
+  --std-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
 }
 
 html {
@@ -17,6 +18,7 @@ body {
   font-weight: 400;
   font-style: normal;
   color: var(--font-color);
+  background-color: rgb(255, 255, 255);
 }
 
 textarea {
@@ -27,6 +29,7 @@ textarea {
   font-weight: 300;
   font-style: normal;
   font-size: 0.9em;
+  background-color: #fff7f8;
 }
 
 textarea:focus {
@@ -44,7 +47,10 @@ textarea:focus {
   padding: 10px 0px;
   border-bottom: var(--std-border);
   box-sizing: border-box;
-  background-color: white;
+  background-color: #464d77;
+  color: white;
+
+  box-shadow: var(--std-shadow);
 }
 
 .topbar span {
@@ -56,7 +62,8 @@ textarea:focus {
   flex-direction: row;
 }
 
-.clientbutton {
+.clientbutton,
+.clientadd {
   border: var(--std-border);
   box-sizing: border-box;
   padding: 3px;
@@ -86,6 +93,9 @@ textarea:focus {
   display: flex;
   flex-direction: row;
   align-items: center;
+  background-color: #464d77;
+  color: white;
+  font-weight: bold;
 }
 
 .containerheader * {
@@ -110,6 +120,8 @@ textarea:focus {
   box-sizing: border-box;
   border-radius: 20px;
   overflow: hidden;
+  background-color: #fff7f8;
+  box-shadow: var(--std-shadow);
 }
 
 .container * {
@@ -130,4 +142,47 @@ textarea:focus {
 
 .spacer {
   height: 40px;
+}
+
+.popup {
+  z-index: 100;
+  position: fixed;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 400px;
+  height: 400px;
+  transform: translateY(50%);
+  background-color: #fff7f8;
+  border-radius: 40px;
+  border: var(--std-border);
+  box-shadow: var(--std-shadow);
+  /* overflow: hidden; */
+}
+
+.popup span {
+  margin: 20px;
+}
+
+.inputline {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  place-items: center;
+  width: 100%;
+}
+
+.inputline input {
+  width: 70%;
+  margin: 5%;
+}
+
+.inputs {
+  margin: 40px 20px;
+}
+
+.submitbutton {
+  padding: 5px;
+  border: var(--std-border);
+  border-radius: 5px;
+  cursor: pointer;
 }

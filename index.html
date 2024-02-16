@@ -13,11 +13,26 @@
   <div class="topbar" id="topbar">
     <span>Tasklist</span>
     <div class="clientlist" id="clientlist">
-      <div class="clientbutton" id="addClient">+</div>
-      <div class="clientbutton" id="clientbutton0">Test</div>
+      <div class="clientadd" id="addClient">+</div>
     </div>
   </div>
-  <div class="content" id="content"></div>
+  <div class="content" id="content">
+    <div class="popup" id="popup">
+      <span>New Engagement</span>
+      <input type="text" class="nameinput" placeholder="Engagement Name" />
+      <div class="inputs">
+        <div class="inputline">
+          <input type="text" class="sectioninput" placeholder="Section #" />
+          <input type="text" class="numberinput" placeholder="# of Controls" />
+        </div>
+        <div class="inputline">
+          <input type="text" class="sectioninput" placeholder="Section #" />
+          <input type="text" class="numberinput" placeholder="# of Controls" />
+        </div>
+      </div>
+      <div class="submitbutton" id="submitbutton">Submit</div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>

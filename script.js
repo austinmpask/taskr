@@ -1,5 +1,5 @@
 const clientData = {
-  name: "George Hills",
+  name: "Sample Client",
   1: [
     [true, 0, 1, 3, `test\ntest2`],
     [false, 1, 2, 0, "test for 1.2"],
@@ -12,12 +12,14 @@ const clientData = {
   ],
 };
 
+const clients = [];
+
 const colorCodes = {
-  0: "#ffffff", //White
+  0: "#fff7f8", //White
   1: "#a9f0d1", //Green
   2: "#ffd25a", //Yellow
   3: "#ff7e6b", //Red
-  4: "#fff7f8", //White
+  4: "#fff7f8", //Whitish
   5: "#464d77", //Dark blue
 };
 
@@ -91,7 +93,7 @@ function rotateFollowup(object, state) {
   } else {
     object.setAttribute("data-state", "false");
     object.innerHTML = "";
-    object.style.background = colorCodes[0];
+    object.style.background = colorCodes[4];
   }
 }
 
@@ -111,7 +113,7 @@ function populateLineItem(object, data, lineNumber) {
   }
 }
 
-function refreshElements() {
+function refreshElements(flag) {
   document.querySelectorAll(".followup-marker").forEach((element) => {
     if (element.getAttribute("data-state") === "true") {
       element.style.background = colorCodes[3];
@@ -122,6 +124,12 @@ function refreshElements() {
   document.querySelectorAll(".checkbox").forEach((element) => {
     const state = Number(element.getAttribute("data-state"));
     rotateCheckbox(element, state - 1);
+  });
+  refreshHeader(flag);
+
+  document.querySelectorAll(".containerheader").forEach((header) => {
+    const textbox = header.nextElementSibling.children[5];
+    textbox.style.border = "none";
   });
 }
 
@@ -166,48 +174,83 @@ function createLineItem(item, sectionNumber, controlNumber) {
   return container;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  //   updateSelection(currentClient);
-  //   currentClientButton.style.color = "blue";
+function createNewClient() {
+  const name = document.querySelector(".nameinput").value;
+  const sections = [...document.querySelectorAll(".sectioninput")].map(
+    (input) => {
+      return input.value;
+    }
+  );
 
-  //SAMPLE CLIENT TEST
-  //   let k = 3;
+  const controls = [...document.querySelectorAll(".numberinput")].map(
+    (input) => {
+      return input.value;
+    }
+  );
 
-  //   for (let i = 1; i < 4; i++) {
-  //     const box = createBox();
-  //     createHeader(box, i);
-  //     for (let j = 1; j <= k; j++) {
-  //       createLineItem(box, i, j);
-  //     }
-  //     spacer(box);
-  //     k++;
-  //   }
+  const client = {
+    name: name,
+  };
 
-  const clientKeys = Object.keys(clientData);
-  const clientValues = Object.values(clientData);
+  for (let i = 0; i < sections.length; i++) {
+    let section = [];
+    for (let j = 0; j < controls[i]; j++) {
+      section.push([false, 0, 0, 0, ""]);
+    }
+    client[sections[i]] = section;
+  }
+  return client;
+}
+
+function refreshHeader(flag) {
+  if (flag) {
+    document.querySelectorAll(".clientbutton").forEach((button) => {
+      button.remove();
+    });
+  }
+  clients.forEach((client, index) => {
+    const headerItem = document.createElement("div");
+    headerItem.classList.add("clientbutton");
+    headerItem.setAttribute("data-clientId", index);
+    headerItem.innerHTML = client.name;
+    document
+      .getElementById("addClient")
+      .insertAdjacentElement("beforebegin", headerItem);
+  });
+
+  document.querySelectorAll(".clientbutton").forEach((button) => {
+    button.addEventListener("click", () => {
+      const id = button.getAttribute("data-clientId");
+      loadClient(id);
+      refreshElements(true);
+    });
+  });
+}
+
+function loadClient(clientId) {
+  document.querySelectorAll(".sectionbox").forEach((box) => {
+    box.remove();
+  });
+
+  document.querySelectorAll(".spacer").forEach((spacer) => {
+    spacer.remove();
+  });
+
+  const clientKeys = Object.keys(clients[clientId]);
+  const clientValues = Object.values(clients[clientId]);
 
   const numSections = clientKeys.length - 1;
-
   for (let i = 0; i < numSections; i++) {
     const box = createBox();
-    createHeader(box, i + 1);
-    for (let j = 1; j <= clientData[i + 1].length; j++) {
+    createHeader(box, clientKeys[i]);
+    for (let j = 1; j <= clients[clientId][clientKeys[i]].length; j++) {
       const lineItem = createLineItem(box, i + 1, j);
       console.log("test");
-      populateLineItem(lineItem, clientData[i + 1], j - 1);
+      populateLineItem(lineItem, clients[clientId][i + 1], j - 1);
     }
     spacer(box);
   }
 
-  refreshElements();
-
-  //Fix border overlaps
-  document.querySelectorAll(".containerheader").forEach((header) => {
-    const textbox = header.nextElementSibling.children[5];
-    textbox.style.border = "none";
-  });
-
-  //HANDLE CLICKING CHECKBOXES
   document.querySelectorAll(".checkbox").forEach((checkbox) => {
     checkbox.addEventListener("click", () => {
       let state = Number(checkbox.getAttribute("data-state"));
@@ -220,5 +263,31 @@ document.addEventListener("DOMContentLoaded", () => {
       let state = marker.getAttribute("data-state");
       rotateFollowup(marker, state);
     });
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  clients.push(clientData);
+
+  loadClient(0);
+
+  refreshElements(false);
+
+  //Add new client
+  document.getElementById("addClient").addEventListener("click", () => {
+    const popupWindow = document.getElementById("popup");
+    popupWindow.style.display === "none" || popupWindow.style.display === ""
+      ? (popupWindow.style.display = "flex")
+      : (popupWindow.style.display = "none");
+  });
+
+  document.getElementById("submitbutton").addEventListener("click", () => {
+    const popupWindow = document.getElementById("popup");
+    clients.push(createNewClient());
+    console.log(clients);
+    loadClient(clients.length - 1);
+    refreshElements(true);
+
+    popupWindow.style.display = "none";
   });
 });
