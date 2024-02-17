@@ -16,17 +16,21 @@ html {
     #c850c0 68%,
     #ffcc70 100%
   );
+  background-attachment: fixed;
+  overflow-x: hidden;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  width: 99vw;
+  align-items: center;
+  width: 100vw;
   margin: 0;
   font-family: "Questrial", sans-serif;
   font-weight: 500;
   font-style: normal;
   color: var(--font-color);
+  overflow-x: hidden;
 }
 
 textarea {
@@ -50,13 +54,18 @@ textarea:focus {
   display: grid;
   grid-template-columns: 1fr 8fr;
   height: 80px;
-  width: 100%;
+  width: 100vw;
   /* padding: 10px 0px; */
   /* border-bottom: var(--std-border); */
   box-sizing: border-box;
   /* background-color: #000000; */
   color: white;
-
+  background: linear-gradient(
+    0deg,
+    rgba(0, 32, 36, 0) 0%,
+    rgba(0, 0, 0, 0.452) 100%
+  );
+  background-size: cover;
   /* box-shadow: var(--std-shadow); */
 }
 
@@ -90,7 +99,8 @@ textarea:focus {
   /* margin: 0px 4px; */
   font-size: 1.1em;
   font-weight: 600;
-  padding: 0px 15px;
+  padding: 0px 8px;
+  margin: 0px 7px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -99,11 +109,7 @@ textarea:focus {
 }
 
 .clientbutton:hover {
-  background-image: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 0.322),
-    rgba(0, 0, 0, 0)
-  );
+  border-bottom: 1px solid rgba(255, 255, 255, 0.342);
 }
 
 .add {
@@ -116,8 +122,12 @@ textarea:focus {
   cursor: pointer;
   /* padding: 3px 10px; */
   /* margin: 0 4px; */
-  font-weight: 500;
+  font-weight: bold;
+  margin-right: 23px;
+  margin-left: 10px;
+  margin-bottom: 3px;
 }
+
 .add span {
   font-size: 1em;
   display: flex;
@@ -131,6 +141,8 @@ textarea:focus {
   flex-direction: column;
   align-items: center;
   margin: 90px 10% 0 10%;
+  transition: filter;
+  transition-duration: 200ms;
 }
 
 .container {
@@ -156,7 +168,7 @@ textarea:focus {
 }
 
 .containerheader * {
-  margin-left: 10px;
+  margin-left: 14px;
 }
 
 .checkbox {
@@ -164,6 +176,8 @@ textarea:focus {
   box-sizing: border-box;
   cursor: pointer;
   user-select: none;
+  transition: background-color;
+  transition-duration: 200ms;
 }
 
 .sectionlabel {
@@ -180,6 +194,7 @@ textarea:focus {
   overflow: hidden;
   /* background-color: #fff7f8; */
   box-shadow: var(--std-shadow);
+  max-width: 850px;
 }
 
 .container * {
@@ -199,6 +214,8 @@ textarea:focus {
   padding: 0px 15px;
   user-select: none;
   cursor: pointer;
+  transition: background-color;
+  transition-duration: 200ms;
 }
 
 .spacer {
@@ -212,9 +229,13 @@ textarea:focus {
   flex-direction: column;
   align-items: center;
   width: 400px;
-  height: 400px;
-  transform: translateY(50%);
-  background-color: #fff7f8;
+  min-height: 400px;
+  transform: translateY(150px);
+  transform: translateX();
+  background-color: #000000;
+  color: white;
+  font-weight: 600;
+  font-size: 1.2em;
   border-radius: 40px;
   border: var(--std-border);
   box-shadow: var(--std-shadow);
@@ -222,7 +243,7 @@ textarea:focus {
 }
 
 .popup span {
-  margin: 20px;
+  margin: 30px;
 }
 
 .inputline {
@@ -241,19 +262,128 @@ textarea:focus {
   margin: 40px 20px;
 }
 
+input {
+  background-color: #000000;
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 5px;
+  color: white;
+}
+
 .submitbutton {
   padding: 5px;
   border: var(--std-border);
   border-radius: 5px;
   cursor: pointer;
+  transition: transform;
+  border: 1px solid white;
+  margin-bottom: 30px;
+  transition-duration: 200ms;
+}
+
+.submitbutton:hover {
+  transform: scale(120%);
+  transform-origin: center;
+  border: 1px solid rgb(117, 243, 78);
 }
 
 .deletebutton {
   z-index: 100;
   position: fixed;
-  width: 100px;
-  height: 100px;
-  background-color: red;
+  width: 60px;
+  height: 60px;
+  background-color: #ff2516;
+  border-radius: 30px;
   bottom: 10px;
   right: 10px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
+    rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.svg-icon {
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.svg-icon-ui {
+  width: 0.9em;
+  height: 0.9em;
+}
+
+.svg-icon-ui path,
+.svg-icon-ui polygon,
+.svg-icon-ui rect {
+  fill: #ffffff;
+}
+.svg-icon-ui circle {
+  stroke: #ffffff;
+  stroke-width: 1;
+}
+
+.svg-icon path,
+.svg-icon polygon,
+.svg-icon rect {
+  fill: #000000;
+}
+
+.delete {
+  width: 1.5em;
+  height: 1.5em;
+}
+
+.addline,
+.subline {
+  cursor: pointer;
+  width: 1.3em;
+  height: 1.3em;
+}
+
+.svg-icon circle {
+  stroke: #000000;
+  stroke-width: 1;
+}
+
+.addersection {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.addersection * {
+  margin: 10px;
+}
+
+body::-webkit-scrollbar {
+  background-color: #fff;
+  width: 16px;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge, and Firefox */
+body {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.bottom {
+  z-index: 50;
+  position: fixed;
+  bottom: 0;
+  background-color: #ff2516;
+  width: 100vw;
+  height: 70px;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 32, 36, 0) 0%,
+    rgba(0, 0, 0, 0.226) 100%
+  );
+  pointer-events: none;
+  background-size: cover;
 }
