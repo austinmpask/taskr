@@ -1,4 +1,4 @@
-const clientData = {
+let clientData = {
   name: "Sample Client",
   1: [
     [true, 0, 1, 3, `test\ntest2`],
@@ -12,7 +12,7 @@ const clientData = {
   ],
 };
 
-const clients = [];
+let clients = [];
 
 let currentClient = 0;
 
@@ -90,7 +90,7 @@ function rotateCheckbox(checkbox, state) {
   const lineindex = checkbox.getAttribute("data-lineindex");
   const storageindex = checkbox.getAttribute("data-storageindex");
   clients[currentClient][key][lineindex][storageindex] = state + 1;
-  console.log(clients[currentClient]);
+  // console.log(clients[currentClient]);
 }
 
 function rotateFollowup(object, state) {
@@ -104,7 +104,7 @@ function rotateFollowup(object, state) {
     const lineindex = object.getAttribute("data-lineindex");
     const storageindex = object.getAttribute("data-storageindex");
     clients[currentClient][key][lineindex][storageindex] = true;
-    console.log(clients[currentClient]);
+    // console.log(clients[currentClient]);
   } else {
     object.setAttribute("data-state", "false");
     object.innerHTML = "";
@@ -114,11 +114,31 @@ function rotateFollowup(object, state) {
     const lineindex = object.getAttribute("data-lineindex");
     const storageindex = object.getAttribute("data-storageindex");
     clients[currentClient][key][lineindex][storageindex] = false;
-    console.log(clients[currentClient]);
+    // console.log(clients[currentClient]);
   }
 }
 
-function saveLocally() {}
+function saveLocally() {
+  localStorage.setItem("userData", JSON.stringify(clients));
+  // localStorage.setItem("currentClient", JSON.stringify(currentClient));
+}
+
+function initializeStorage() {
+  localStorage.setItem("userData", JSON.stringify(clients));
+  console.log("Starting fresh!");
+}
+
+function loadData() {
+  if (!localStorage.getItem("userData")) {
+    initializeStorage();
+  }
+  clients = JSON.parse(localStorage.getItem("userData"));
+
+  // if (!localStorage.getItem("currentClient")) {
+  //   localStorage.setItem("currentClient", JSON.stringify(currentClient));
+  // }
+  // currentClient = JSON.parse(localStorage.getItem("currentClient"));
+}
 
 function populateLineItem(object, data, lineNumber, sectionNumber) {
   if (data) {
@@ -299,7 +319,7 @@ function saveText(object) {
   const storageindex = object.getAttribute("data-storageindex");
 
   clients[currentClient][key][lineindex][storageindex] = object.value;
-  console.log(clients[currentClient]);
+  // console.log(clients[currentClient]);
 }
 
 function loadClient(clientId) {
@@ -320,7 +340,6 @@ function loadClient(clientId) {
     createHeader(box, clientKeys[i]);
     for (let j = 1; j <= clients[clientId][clientKeys[i]].length; j++) {
       const lineItem = createLineItem(box, clientKeys[i], j, clientId);
-      console.log("test");
       populateLineItem(
         lineItem,
         clients[clientId][i + 1],
@@ -335,6 +354,7 @@ function loadClient(clientId) {
     checkbox.addEventListener("click", () => {
       let state = Number(checkbox.getAttribute("data-state"));
       rotateCheckbox(checkbox, state);
+      saveLocally();
     });
   });
 
@@ -342,22 +362,25 @@ function loadClient(clientId) {
     marker.addEventListener("click", () => {
       let state = marker.getAttribute("data-state");
       rotateFollowup(marker, state);
+      saveLocally();
     });
   });
 
   document.querySelectorAll(".textbox").forEach((textbox) => {
     textbox.addEventListener("input", () => {
       saveText(textbox);
+      saveLocally();
     });
   });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   clients.push(clientData);
-
+  loadData();
   loadClient(0);
-
   refreshElements(false);
+  saveLocally();
+  console.log(clients);
 
   //Add new client
   document.getElementById("addClient").addEventListener("click", () => {
@@ -367,6 +390,17 @@ document.addEventListener("DOMContentLoaded", () => {
       : (popupWindow.style.display = "none");
   });
 
+  document.getElementById("deletebutton").addEventListener("click", () => {
+    if (clients.length > 1) {
+      clients.splice(currentClient, 1);
+      saveLocally();
+      currentClient = 0;
+      console.log(clients[currentClient]);
+      refreshElements(true);
+      loadClient(0);
+    }
+  });
+
   document.getElementById("submitbutton").addEventListener("click", () => {
     const popupWindow = document.getElementById("popup");
     clients.push(createNewClient());
@@ -374,6 +408,19 @@ document.addEventListener("DOMContentLoaded", () => {
     loadClient(clients.length - 1);
     currentClient = clients.length - 1;
     refreshElements(true);
+
+    //cleanup
+    document.querySelectorAll(".sectioninput").forEach((sectioninput) => {
+      sectioninput.value = "";
+    });
+
+    document.querySelectorAll(".numberinput").forEach((numberinput) => {
+      numberinput.value = "";
+    });
+
+    document.querySelector(".nameinput").value = "";
+
+    saveLocally();
 
     popupWindow.style.display = "none";
   });
