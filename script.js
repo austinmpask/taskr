@@ -14,6 +14,8 @@ const clientData = {
 
 const clients = [];
 
+let currentClient = 0;
+
 const colorCodes = {
   0: "#fff7f8", //White
   1: "#a9f0d1", //Green
@@ -27,10 +29,10 @@ function clientBtnString(id) {
   return "clientbutton" + String(id);
 }
 
-function updateSelection(id) {
-  currentClientButton = document.getElementById(clientBtnString(id));
-  currentClient = id;
-}
+// function updateSelection(id) {
+//   currentClientButton = document.getElementById(clientBtnString(id));
+//   currentClient = id;
+// }
 
 function prettyControl(sectionNumber, controlNumber) {
   let prettyNum = String(controlNumber);
@@ -83,6 +85,12 @@ function rotateCheckbox(checkbox, state) {
   }
   checkbox.style.background = colorCodes[state + 1];
   checkbox.setAttribute("data-state", state + 1);
+
+  const key = checkbox.getAttribute("data-sec");
+  const lineindex = checkbox.getAttribute("data-lineindex");
+  const storageindex = checkbox.getAttribute("data-storageindex");
+  clients[currentClient][key][lineindex][storageindex] = state + 1;
+  console.log(clients[currentClient]);
 }
 
 function rotateFollowup(object, state) {
@@ -90,14 +98,29 @@ function rotateFollowup(object, state) {
     object.setAttribute("data-state", "true");
     object.innerHTML = "!";
     object.style.background = colorCodes[3];
+
+    //saving
+    const key = object.getAttribute("data-sec");
+    const lineindex = object.getAttribute("data-lineindex");
+    const storageindex = object.getAttribute("data-storageindex");
+    clients[currentClient][key][lineindex][storageindex] = true;
+    console.log(clients[currentClient]);
   } else {
     object.setAttribute("data-state", "false");
     object.innerHTML = "";
     object.style.background = colorCodes[4];
+
+    const key = object.getAttribute("data-sec");
+    const lineindex = object.getAttribute("data-lineindex");
+    const storageindex = object.getAttribute("data-storageindex");
+    clients[currentClient][key][lineindex][storageindex] = false;
+    console.log(clients[currentClient]);
   }
 }
 
-function populateLineItem(object, data, lineNumber) {
+function saveLocally() {}
+
+function populateLineItem(object, data, lineNumber, sectionNumber) {
   if (data) {
     const followup = object.children[0];
     const check1 = object.children[2];
@@ -105,11 +128,26 @@ function populateLineItem(object, data, lineNumber) {
     const check3 = object.children[4];
     const textbox = object.children[5];
 
+    //sync states with data
+    let family = [followup, check1, check2, check3, textbox];
+
+    family.forEach((thing) => {
+      thing.setAttribute("data-sec", sectionNumber);
+      thing.setAttribute("data-lineindex", lineNumber);
+    });
+
     followup.setAttribute("data-state", data[lineNumber][0]);
-    check1.setAttribute("data-state", data[lineNumber][1]);
-    check2.setAttribute("data-state", data[lineNumber][2]);
-    check3.setAttribute("data-state", data[lineNumber][3]);
+    followup.setAttribute("data-storageindex", 0);
+
     textbox.value = data[lineNumber][4];
+    textbox.setAttribute("data-storageindex", 4);
+
+    check1.setAttribute("data-state", data[lineNumber][1]);
+    check1.setAttribute("data-storageindex", 1);
+    check2.setAttribute("data-state", data[lineNumber][2]);
+    check2.setAttribute("data-storageindex", 2);
+    check3.setAttribute("data-state", data[lineNumber][3]);
+    check3.setAttribute("data-storageindex", 3);
   }
 }
 
@@ -133,7 +171,7 @@ function refreshElements(flag) {
   });
 }
 
-function createLineItem(item, sectionNumber, controlNumber) {
+function createLineItem(item, sectionNumber, controlNumber, clientId) {
   //Create sub elements
   const container = document.createElement("div");
   container.classList.add("container");
@@ -141,7 +179,11 @@ function createLineItem(item, sectionNumber, controlNumber) {
   const followupMarker = document.createElement("div");
   followupMarker.classList.add("followup-marker");
 
-  followupMarker.setAttribute("data-state", "false");
+  followupMarker.setAttribute(
+    "data-state",
+    clients[clientId][sectionNumber][controlNumber - 1][0]
+  );
+
   //   followupMarker.innerHTML = "";
 
   const sectionLabel = document.createElement("span");
@@ -154,14 +196,37 @@ function createLineItem(item, sectionNumber, controlNumber) {
 
   const boxes = [checkBox1, checkBox2, checkBox3];
 
-  boxes.forEach((box) => {
+  boxes.forEach((box, index) => {
     // box.innerHTML = "X";
     box.classList.add("checkbox");
-    box.setAttribute("data-state", "0");
+    box.setAttribute(
+      "data-state",
+      clients[clientId][sectionNumber][controlNumber - 1][index + 1]
+    );
   });
 
   const textBox = document.createElement("textArea");
   textBox.spellcheck = false;
+  textBox.classList.add("textbox");
+
+  textBox.value = clients[clientId][sectionNumber][controlNumber - 1][4];
+
+  const family = [followupMarker, checkBox1, checkBox2, checkBox3, textBox];
+
+  family.forEach((thing) => {
+    thing.setAttribute("data-sec", sectionNumber);
+    thing.setAttribute("data-lineindex", controlNumber - 1);
+  });
+  //sync states with data
+  // followupMarker.setAttribute("data-sec", sectionNumber);
+  // followupMarker.setAttribute("data-lineindex", controlNumber - 1);
+  followupMarker.setAttribute("data-storageindex", 0);
+  checkBox1.setAttribute("data-storageindex", 1);
+  checkBox2.setAttribute("data-storageindex", 2);
+  checkBox3.setAttribute("data-storageindex", 3);
+
+  textBox.setAttribute("data-storageindex", 4);
+
   //Set up the element and push to dom
   container.appendChild(followupMarker);
   container.appendChild(sectionLabel);
@@ -221,10 +286,20 @@ function refreshHeader(flag) {
   document.querySelectorAll(".clientbutton").forEach((button) => {
     button.addEventListener("click", () => {
       const id = button.getAttribute("data-clientId");
+      currentClient = id;
       loadClient(id);
       refreshElements(true);
     });
   });
+}
+
+function saveText(object) {
+  const key = object.getAttribute("data-sec");
+  const lineindex = object.getAttribute("data-lineindex");
+  const storageindex = object.getAttribute("data-storageindex");
+
+  clients[currentClient][key][lineindex][storageindex] = object.value;
+  console.log(clients[currentClient]);
 }
 
 function loadClient(clientId) {
@@ -244,9 +319,14 @@ function loadClient(clientId) {
     const box = createBox();
     createHeader(box, clientKeys[i]);
     for (let j = 1; j <= clients[clientId][clientKeys[i]].length; j++) {
-      const lineItem = createLineItem(box, i + 1, j);
+      const lineItem = createLineItem(box, clientKeys[i], j, clientId);
       console.log("test");
-      populateLineItem(lineItem, clients[clientId][i + 1], j - 1);
+      populateLineItem(
+        lineItem,
+        clients[clientId][i + 1],
+        j - 1,
+        clientKeys[i]
+      );
     }
     spacer(box);
   }
@@ -262,6 +342,12 @@ function loadClient(clientId) {
     marker.addEventListener("click", () => {
       let state = marker.getAttribute("data-state");
       rotateFollowup(marker, state);
+    });
+  });
+
+  document.querySelectorAll(".textbox").forEach((textbox) => {
+    textbox.addEventListener("input", () => {
+      saveText(textbox);
     });
   });
 }
@@ -286,6 +372,7 @@ document.addEventListener("DOMContentLoaded", () => {
     clients.push(createNewClient());
     console.log(clients);
     loadClient(clients.length - 1);
+    currentClient = clients.length - 1;
     refreshElements(true);
 
     popupWindow.style.display = "none";
