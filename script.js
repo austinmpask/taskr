@@ -18,9 +18,9 @@ let currentClient = 0;
 
 const colorCodes = {
   0: "#fff7f8", //White
-  1: "#a9f0d1", //Green
-  2: "#ffd25a", //Yellow
-  3: "#ff7e6b", //Red
+  1: "#6effc0", //Green
+  2: "#fffa56", //Yellow
+  3: "#ff2516", //Red
   4: "#fff7f8", //Whitish
   5: "#464d77", //Dark blue
 };
@@ -46,7 +46,7 @@ function createHeader(item, sectionNumber) {
   const container = document.createElement("div");
   container.classList.add("containerheader");
   const span = document.createElement("span");
-  span.innerHTML = `Section ${sectionNumber}`;
+  span.innerHTML = `S ${sectionNumber}`;
   container.appendChild(span);
   item.appendChild(container);
 }
@@ -71,13 +71,13 @@ function rotateCheckbox(checkbox, state) {
 
   switch (state) {
     case 0:
-      checkbox.innerHTML = "✔️";
+      checkbox.innerHTML = "✓";
       break;
     case 1:
-      checkbox.innerHTML = "•••";
+      checkbox.innerHTML = "?";
       break;
     case 2:
-      checkbox.innerHTML = "✖";
+      checkbox.innerHTML = "X";
       break;
     case -1:
       checkbox.innerHTML = "";
