@@ -18,4 +18,4 @@ _Warning: As data is locally stored for security reasons, deleting your browser 
 
 You can use the tool [here].
 
-[here]: <https://tasker-psi.vercel.app>
+[here]: <https://taskr-psi.vercel.app>
