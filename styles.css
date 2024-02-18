@@ -368,6 +368,11 @@ input {
   top: 20px;
 }
 
+.warninglabel {
+  font-size: 0.7em;
+  text-align: center;
+}
+
 .addersection {
   display: flex;
   flex-direction: row;

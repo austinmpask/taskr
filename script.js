@@ -6,7 +6,7 @@ let clientData = {
       0,
       0,
       0,
-      `Welcome to taskr!\n\nA simple way to organize your projects`,
+      `Welcome to taskr!\n\nA simple way to organize your SOC projects`,
     ],
     [
       false,
@@ -37,7 +37,7 @@ let clientData = {
       0,
       0,
       0,
-      `These text fields can be used for notetaking!\nGet started by adding your own project by clicking the icon at the top right!`,
+      `These text fields can be used for tracking open items!\nGet started by adding your own project by clicking the icon at the top right!`,
     ],
   ],
 };
@@ -501,79 +501,88 @@ function togWindow() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  clients.push(clientData);
-  loadData();
-  currentClient = clients.length - 1;
-  loadClient(currentClient);
-  refreshElements(false);
-  saveLocally();
-  console.log(clients);
+  if (
+    /Chrome/.test(navigator.userAgent) &&
+    /Google Inc/.test(navigator.vendor)
+  ) {
+    // User is using Chrome
 
-  //Add new client
-  document.getElementById("addClient").addEventListener("click", () => {
-    togWindow();
-  });
+    clients.push(clientData);
+    loadData();
+    currentClient = clients.length - 1;
+    loadClient(currentClient);
+    refreshElements(false);
+    saveLocally();
+    console.log(clients);
 
-  document.getElementById("closebutton").addEventListener("click", () => {
-    togWindow();
-  });
-
-  document.getElementById("deletebutton").addEventListener("click", () => {
-    if (clients.length > 1) {
-      if (
-        confirm(
-          `Are you sure you want to delete ${clients[currentClient].name}?`
-        )
-      ) {
-        clients.splice(currentClient, 1);
-        saveLocally();
-        location.reload(true);
-      }
-    } else {
-      alert("You must have atleast one current project!");
-    }
-  });
-
-  document.getElementById("addline").addEventListener("click", () => {
-    document
-      .getElementById("inputsections")
-      .insertAdjacentHTML("afterend", addLineHTML);
-  });
-
-  document.getElementById("subline").addEventListener("click", () => {
-    if (document.querySelectorAll(".inputline").length > 1) {
-      const lineitem = document
-        .querySelectorAll(".inputline")
-        .item(document.querySelectorAll(".inputline").length - 1);
-      lineitem.remove();
-    }
-  });
-
-  document.getElementById("submitbutton").addEventListener("click", () => {
-    if (dataCheck()) {
-      clients.push(createNewClient());
-      console.log(clients);
-      loadClient(clients.length - 1);
-      currentClient = clients.length - 1;
-      refreshElements(true);
-
-      //cleanup
-      const inputs = document.querySelectorAll(".sectioninput");
-      const numinputs = document.querySelectorAll(".numberinput");
-
-      for (let i = inputs.length - 1; i >= 0; i--) {
-        i > 0 ? inputs[i].remove() : (inputs[i].value = "");
-        i > 0 ? numinputs[i].remove() : (numinputs[i].value = "");
-      }
-
-      document.querySelector(".nameinput").value = "";
-
-      saveLocally();
+    //Add new client
+    document.getElementById("addClient").addEventListener("click", () => {
       togWindow();
-    } else {
-      alert(
-        "Please fill out all fields, and do not duplicate section numbers!"
-      );
-    }
-  });
+    });
+
+    document.getElementById("closebutton").addEventListener("click", () => {
+      togWindow();
+    });
+
+    document.getElementById("deletebutton").addEventListener("click", () => {
+      if (clients.length > 1) {
+        if (
+          confirm(
+            `Are you sure you want to delete ${clients[currentClient].name}?`
+          )
+        ) {
+          clients.splice(currentClient, 1);
+          saveLocally();
+          location.reload(true);
+        }
+      } else {
+        alert("You must have atleast one current project!");
+      }
+    });
+
+    document.getElementById("addline").addEventListener("click", () => {
+      document
+        .getElementById("inputsections")
+        .insertAdjacentHTML("afterend", addLineHTML);
+    });
+
+    document.getElementById("subline").addEventListener("click", () => {
+      if (document.querySelectorAll(".inputline").length > 1) {
+        const lineitem = document
+          .querySelectorAll(".inputline")
+          .item(document.querySelectorAll(".inputline").length - 1);
+        lineitem.remove();
+      }
+    });
+
+    document.getElementById("submitbutton").addEventListener("click", () => {
+      if (dataCheck()) {
+        clients.push(createNewClient());
+        console.log(clients);
+        loadClient(clients.length - 1);
+        currentClient = clients.length - 1;
+        refreshElements(true);
+
+        //cleanup
+        const inputs = document.querySelectorAll(".sectioninput");
+        const numinputs = document.querySelectorAll(".numberinput");
+
+        for (let i = inputs.length - 1; i >= 0; i--) {
+          i > 0 ? inputs[i].remove() : (inputs[i].value = "");
+          i > 0 ? numinputs[i].remove() : (numinputs[i].value = "");
+        }
+
+        document.querySelector(".nameinput").value = "";
+
+        saveLocally();
+        togWindow();
+      } else {
+        alert(
+          "Please fill out all fields, and do not duplicate section numbers!"
+        );
+      }
+    });
+  } else {
+    alert("taskr currently only supports Google Chrome :(");
+  }
 });
