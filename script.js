@@ -159,7 +159,7 @@ function rotateFollowup(object, state) {
   } else {
     object.setAttribute("data-state", "false");
     object.innerHTML = "";
-    object.style.background = colorCodes[4];
+    object.style.background = "transparent";
 
     const key = object.getAttribute("data-sec");
     const lineindex = object.getAttribute("data-lineindex");
@@ -235,6 +235,10 @@ function refreshElements(flag) {
     rotateCheckbox(element, state - 1);
   });
   refreshHeader(flag);
+
+  document.querySelectorAll(".container").forEach((object) => {
+    updateRowBg(object);
+  });
 
   document.querySelectorAll(".containerheader").forEach((header) => {
     const textbox = header.nextElementSibling.children[5];
@@ -324,6 +328,8 @@ function dataCheck() {
     }
   );
 
+  const uniqueValues = new Set(sections).size !== sections.length;
+
   const sectionCheck = sections.some((element) => {
     return element === "";
   });
@@ -332,7 +338,7 @@ function dataCheck() {
     return element === "";
   });
 
-  if (name === "" || sectionCheck || controlCheck) {
+  if (name === "" || sectionCheck || controlCheck || uniqueValues) {
     return false;
   }
   return true;
@@ -376,7 +382,7 @@ function refreshHeader(flag) {
     headerItem.classList.add("clientbutton");
     headerItem.setAttribute("data-clientId", index);
     if (index === Number(currentClient)) {
-      headerItem.style.borderBottom = "1px solid rgba(255, 255, 255)";
+      headerItem.classList.add("selectedclient");
     }
     headerItem.innerHTML = client.name;
     document
@@ -401,6 +407,23 @@ function saveText(object) {
 
   clients[currentClient][key][lineindex][storageindex] = object.value;
   // console.log(clients[currentClient]);
+}
+
+function updateRowBg(object) {
+  const checkbox1 = Number(object.children[2].getAttribute("data-state"));
+  const checkbox2 = Number(object.children[3].getAttribute("data-state"));
+  const checkbox3 = Number(object.children[4].getAttribute("data-state"));
+  const noteBox = object.children[5];
+
+  if (checkbox1 === checkbox2 && checkbox2 === checkbox3 && checkbox1 === 1) {
+    object.style.backgroundColor = colorCodes[1];
+    noteBox.style.backgroundColor = colorCodes[1];
+    noteBox.style.color = "#a9a9a9";
+  } else {
+    object.style.backgroundColor = colorCodes[0];
+    noteBox.style.backgroundColor = colorCodes[0];
+    noteBox.style.color = "black";
+  }
 }
 
 function loadClient(clientId) {
@@ -436,6 +459,8 @@ function loadClient(clientId) {
       let state = Number(checkbox.getAttribute("data-state"));
       rotateCheckbox(checkbox, state);
       saveLocally();
+      const object = checkbox.parentElement;
+      updateRowBg(object);
     });
   });
 
@@ -444,6 +469,8 @@ function loadClient(clientId) {
       let state = marker.getAttribute("data-state");
       rotateFollowup(marker, state);
       saveLocally();
+      const object = marker.parentElement;
+      updateRowBg(object);
     });
   });
 
@@ -453,6 +480,24 @@ function loadClient(clientId) {
       saveLocally();
     });
   });
+}
+
+function togWindow() {
+  const popupWindow = document.getElementById("popup");
+  const content = document.getElementById("content");
+  const deleteButton = document.getElementById("deletebutton");
+  if (
+    popupWindow.style.display === "none" ||
+    popupWindow.style.display === ""
+  ) {
+    content.style.filter = "blur(4px)";
+    popupWindow.style.display = "flex";
+    deleteButton.style.display = "none";
+  } else {
+    popupWindow.style.display = "none";
+    content.style.filter = "";
+    deleteButton.style.display = "flex";
+  }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -466,18 +511,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //Add new client
   document.getElementById("addClient").addEventListener("click", () => {
-    const popupWindow = document.getElementById("popup");
-    const content = document.getElementById("content");
-    if (
-      popupWindow.style.display === "none" ||
-      popupWindow.style.display === ""
-    ) {
-      content.style.filter = "blur(4px)";
-      popupWindow.style.display = "flex";
-    } else {
-      popupWindow.style.display = "none";
-      content.style.filter = "";
-    }
+    togWindow();
+  });
+
+  document.getElementById("closebutton").addEventListener("click", () => {
+    togWindow();
   });
 
   document.getElementById("deletebutton").addEventListener("click", () => {
@@ -513,8 +551,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   document.getElementById("submitbutton").addEventListener("click", () => {
     if (dataCheck()) {
-      const popupWindow = document.getElementById("popup");
-      const content = document.getElementById("content");
       clients.push(createNewClient());
       console.log(clients);
       loadClient(clients.length - 1);
@@ -533,11 +569,11 @@ document.addEventListener("DOMContentLoaded", () => {
       document.querySelector(".nameinput").value = "";
 
       saveLocally();
-
-      popupWindow.style.display = "none";
-      content.style.filter = "";
+      togWindow();
     } else {
-      alert("Please fill out all fields!");
+      alert(
+        "Please fill out all fields, and do not duplicate section numbers!"
+      );
     }
   });
 });

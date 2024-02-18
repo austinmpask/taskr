@@ -42,6 +42,8 @@ textarea {
   font-style: normal;
   font-size: 0.9em;
   background-color: #fff7f8;
+  transition: background-color, color;
+  transition-duration: 200ms;
 }
 
 textarea:focus {
@@ -108,8 +110,19 @@ textarea:focus {
   height: 50%;
 }
 
-.clientbutton:hover {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.342);
+.clientbutton:hover,
+.selectedclient {
+  /* border-bottom: 1px solid rgba(255, 255, 255, 0.342); */
+  background-image: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 0) 0%,
+    rgba(255, 255, 255, 0.61) 10%,
+    rgba(255, 255, 255, 0.61) 90%,
+    rgba(0, 212, 255, 0) 100%
+  );
+  background-repeat: no-repeat;
+  background-position: bottom;
+  background-size: 100% 1px;
 }
 
 .add {
@@ -142,7 +155,7 @@ textarea:focus {
   align-items: center;
   margin: 90px 10% 0 10%;
   transition: filter;
-  transition-duration: 200ms;
+  transition-duration: 400ms;
 }
 
 .container {
@@ -150,6 +163,8 @@ textarea:focus {
   height: 60px;
   display: grid;
   grid-template-columns: 1fr 1fr 2fr 2fr 2fr 6fr;
+  transition: background-color;
+  transition-duration: 200ms;
 }
 
 .containerheader {
@@ -232,7 +247,7 @@ textarea:focus {
   min-height: 400px;
   transform: translateY(150px);
   transform: translateX();
-  background-color: #000000;
+  background-color: #000000dc;
   color: white;
   font-weight: 600;
   font-size: 1.2em;
@@ -265,15 +280,15 @@ textarea:focus {
 input {
   background-color: #000000;
   border: 1px solid white;
-  border-radius: 5px;
-  padding: 5px;
+  border-radius: 10px;
+  padding: 10px;
   color: white;
 }
 
 .submitbutton {
-  padding: 5px;
+  padding: 10px;
   border: var(--std-border);
-  border-radius: 5px;
+  border-radius: 10px;
   cursor: pointer;
   transition: transform;
   border: 1px solid white;
@@ -294,8 +309,8 @@ input {
   height: 60px;
   background-color: #ff2516;
   border-radius: 30px;
-  bottom: 10px;
-  right: 10px;
+  bottom: 15px;
+  right: 15px;
   box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px,
     rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
   cursor: pointer;
@@ -348,10 +363,16 @@ input {
   stroke-width: 1;
 }
 
+.closebutton {
+  right: 20px;
+  top: 20px;
+}
+
 .addersection {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  margin-top: 20px;
 }
 .addersection * {
   margin: 10px;
@@ -386,4 +407,8 @@ body {
   );
   pointer-events: none;
   background-size: cover;
+}
+
+.closebutton {
+  position: fixed;
 }
