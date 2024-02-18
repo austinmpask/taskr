@@ -1,4 +1,5 @@
 # taskr
+
 ## _A simple SOC organization tool_
 
 This tool is intended for staff members to manage assigned tasks for multiple projects simultaneously.
@@ -17,5 +18,6 @@ It's features are not applicable for project management.
 _Warning: As data is locally stored for security reasons, deleting your browser cache will erase your saved data._
 
 You can use the tool [here].
+_Supported browsers: Google Chrome_
 
-[here]: <https://taskr-psi.vercel.app>
+[here]: https://taskr-psi.vercel.app

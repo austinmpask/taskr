@@ -1,3 +1,4 @@
+//Example data for first time user
 let clientData = {
   name: "Sample Project",
   1: [
@@ -42,6 +43,7 @@ let clientData = {
   ],
 };
 
+//SVGs for checkboxes and followup markers
 const checkSVG = `<svg class="svg-icon" viewBox="0 0 20 20">
 <path fill="none" d="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z"></path>
 </svg>`;
@@ -63,6 +65,7 @@ const addLineHTML = `<div class="inputline" id="inputsections">
 <input type="number" class="numberinput" placeholder="# of Controls" />
 </div>`;
 
+//"clients" stores POJOs for all project info in an array. It is the data source of truth.
 let clients = [];
 
 let currentClient = 0;
@@ -74,17 +77,15 @@ const colorCodes = {
   3: "#ff2516", //Red
   4: "#fff7f8", //Whitish
   5: "#464d77", //Dark blue
+  6: "#a9a9a9", //Light grey
 };
 
+//Tool to make DOM query easier
 function clientBtnString(id) {
   return "clientbutton" + String(id);
 }
 
-// function updateSelection(id) {
-//   currentClientButton = document.getElementById(clientBtnString(id));
-//   currentClient = id;
-// }
-
+//Formatting for table readouts
 function prettyControl(sectionNumber, controlNumber) {
   let prettyNum = String(controlNumber);
   if (prettyNum.length === 1) {
@@ -93,6 +94,7 @@ function prettyControl(sectionNumber, controlNumber) {
   return `${sectionNumber}.${prettyNum}`;
 }
 
+//Create label for each section
 function createHeader(item, sectionNumber) {
   const container = document.createElement("div");
   container.classList.add("containerheader");
@@ -102,6 +104,7 @@ function createHeader(item, sectionNumber) {
   item.appendChild(container);
 }
 
+//Create a parent box to encapsulate each section
 function createBox() {
   const box = document.createElement("div");
   box.classList.add("sectionbox");
@@ -109,12 +112,14 @@ function createBox() {
   return box;
 }
 
+//DOM element to visually divide sections
 function spacer(object) {
   const spacer = document.createElement("div");
   spacer.classList.add("spacer");
   object.insertAdjacentElement("afterend", spacer);
 }
 
+//Reflect appropriate icon for the button state
 function rotateCheckbox(checkbox, state) {
   if (state === 3) {
     state = -1;
@@ -134,46 +139,49 @@ function rotateCheckbox(checkbox, state) {
       checkbox.innerHTML = "";
       break;
   }
+  //Update the background, update the element's state
   checkbox.style.background = colorCodes[state + 1];
   checkbox.setAttribute("data-state", state + 1);
 
+  //Write new state to storage array
   const key = checkbox.getAttribute("data-sec");
   const lineindex = checkbox.getAttribute("data-lineindex");
   const storageindex = checkbox.getAttribute("data-storageindex");
   clients[currentClient][key][lineindex][storageindex] = state + 1;
-  // console.log(clients[currentClient]);
 }
 
 function rotateFollowup(object, state) {
   if (state === "false") {
+    //Update elements state
     object.setAttribute("data-state", "true");
     object.innerHTML = starSVG;
     object.style.background = colorCodes[3];
 
-    //saving
+    //Write new state to storage array
     const key = object.getAttribute("data-sec");
     const lineindex = object.getAttribute("data-lineindex");
     const storageindex = object.getAttribute("data-storageindex");
     clients[currentClient][key][lineindex][storageindex] = true;
-    // console.log(clients[currentClient]);
   } else {
+    //Update elements state
     object.setAttribute("data-state", "false");
     object.innerHTML = "";
     object.style.background = "transparent";
 
+    //Write new state to storage array
     const key = object.getAttribute("data-sec");
     const lineindex = object.getAttribute("data-lineindex");
     const storageindex = object.getAttribute("data-storageindex");
     clients[currentClient][key][lineindex][storageindex] = false;
-    // console.log(clients[currentClient]);
   }
 }
 
+//Store the client array to local storage
 function saveLocally() {
   localStorage.setItem("userData", JSON.stringify(clients));
-  // localStorage.setItem("currentClient", JSON.stringify(currentClient));
 }
 
+//Store the premade dummy data to disk
 function initializeStorage() {
   localStorage.setItem("userData", JSON.stringify(clients));
   console.log("Starting fresh!");
@@ -183,46 +191,13 @@ function loadData() {
   if (!localStorage.getItem("userData")) {
     initializeStorage();
   }
-  clients = JSON.parse(localStorage.getItem("userData"));
-
-  // if (!localStorage.getItem("currentClient")) {
-  //   localStorage.setItem("currentClient", JSON.stringify(currentClient));
-  // }
-  // currentClient = JSON.parse(localStorage.getItem("currentClient"));
-}
-
-function populateLineItem(object, data, lineNumber, sectionNumber) {
-  if (data) {
-    const followup = object.children[0];
-    const check1 = object.children[2];
-    const check2 = object.children[3];
-    const check3 = object.children[4];
-    const textbox = object.children[5];
-
-    //sync states with data
-    let family = [followup, check1, check2, check3, textbox];
-
-    family.forEach((thing) => {
-      thing.setAttribute("data-sec", sectionNumber);
-      thing.setAttribute("data-lineindex", lineNumber);
-    });
-
-    followup.setAttribute("data-state", data[lineNumber][0]);
-    followup.setAttribute("data-storageindex", 0);
-
-    textbox.value = data[lineNumber][4];
-    textbox.setAttribute("data-storageindex", 4);
-
-    check1.setAttribute("data-state", data[lineNumber][1]);
-    check1.setAttribute("data-storageindex", 1);
-    check2.setAttribute("data-state", data[lineNumber][2]);
-    check2.setAttribute("data-storageindex", 2);
-    check3.setAttribute("data-state", data[lineNumber][3]);
-    check3.setAttribute("data-storageindex", 3);
-  }
+  clients = JSON.parse(localStorage.getItem("userData")); //All data is stored locally under userData
 }
 
 function refreshElements(flag) {
+  //Repopulate background colors based on states
+
+  //Flags
   document.querySelectorAll(".followup-marker").forEach((element) => {
     if (element.getAttribute("data-state") === "true") {
       element.style.background = colorCodes[3];
@@ -230,16 +205,21 @@ function refreshElements(flag) {
     }
   });
 
+  //Checkboxes
   document.querySelectorAll(".checkbox").forEach((element) => {
     const state = Number(element.getAttribute("data-state"));
     rotateCheckbox(element, state - 1);
   });
-  refreshHeader(flag);
 
+  //Color the full line item green if all checkboxes are green
   document.querySelectorAll(".container").forEach((object) => {
     updateRowBg(object);
   });
 
+  //Update header elements to reflect data
+  refreshHeader(flag);
+
+  //Remove the first line item's top border so there are no double borders
   document.querySelectorAll(".containerheader").forEach((header) => {
     const textbox = header.nextElementSibling.children[5];
     textbox.style.border = "none";
@@ -247,32 +227,34 @@ function refreshElements(flag) {
 }
 
 function createLineItem(item, sectionNumber, controlNumber, clientId) {
-  //Create sub elements
+  //Parent container
   const container = document.createElement("div");
   container.classList.add("container");
 
+  //Followup flag/marker
   const followupMarker = document.createElement("div");
   followupMarker.classList.add("followup-marker");
 
+  //Set data state to reflect stored data
   followupMarker.setAttribute(
     "data-state",
     clients[clientId][sectionNumber][controlNumber - 1][0]
   );
 
-  //   followupMarker.innerHTML = "";
-
+  //Line item label
   const sectionLabel = document.createElement("span");
   sectionLabel.classList.add("sectionlabel");
   sectionLabel.innerHTML = prettyControl(sectionNumber, controlNumber);
 
+  //Progress tracking checkboxes
   const checkBox1 = document.createElement("div");
   const checkBox2 = document.createElement("div");
   const checkBox3 = document.createElement("div");
 
   const boxes = [checkBox1, checkBox2, checkBox3];
 
+  //Set data states to reflect stored data
   boxes.forEach((box, index) => {
-    // box.innerHTML = "X";
     box.classList.add("checkbox");
     box.setAttribute(
       "data-state",
@@ -280,29 +262,30 @@ function createLineItem(item, sectionNumber, controlNumber, clientId) {
     );
   });
 
+  //Free input note section
   const textBox = document.createElement("textArea");
   textBox.spellcheck = false;
   textBox.classList.add("textbox");
 
+  //Repopulate contents based on saved data
   textBox.value = clients[clientId][sectionNumber][controlNumber - 1][4];
 
   const family = [followupMarker, checkBox1, checkBox2, checkBox3, textBox];
 
+  //Add indexing to be able to tie back to local data
   family.forEach((thing) => {
     thing.setAttribute("data-sec", sectionNumber);
     thing.setAttribute("data-lineindex", controlNumber - 1);
   });
-  //sync states with data
-  // followupMarker.setAttribute("data-sec", sectionNumber);
-  // followupMarker.setAttribute("data-lineindex", controlNumber - 1);
+
+  //Indicators for data array indexes which relate to DOM contents
   followupMarker.setAttribute("data-storageindex", 0);
   checkBox1.setAttribute("data-storageindex", 1);
   checkBox2.setAttribute("data-storageindex", 2);
   checkBox3.setAttribute("data-storageindex", 3);
-
   textBox.setAttribute("data-storageindex", 4);
 
-  //Set up the element and push to dom
+  //Add all to parent element and push to DOM
   container.appendChild(followupMarker);
   container.appendChild(sectionLabel);
   container.appendChild(checkBox1);
@@ -314,30 +297,38 @@ function createLineItem(item, sectionNumber, controlNumber, clientId) {
   return container;
 }
 
+//Validate input data (No missed fields, no duplicate sections)
 function dataCheck() {
   const name = document.querySelector(".nameinput").value;
+
+  //Input sections -> array
   const sections = [...document.querySelectorAll(".sectioninput")].map(
     (input) => {
       return input.value;
     }
   );
 
+  //Input controls -> array
   const controls = [...document.querySelectorAll(".numberinput")].map(
     (input) => {
       return input.value;
     }
   );
 
+  //Verify that there were no duplicate sections inputted
   const uniqueValues = new Set(sections).size !== sections.length;
 
+  //Blank section check
   const sectionCheck = sections.some((element) => {
     return element === "";
   });
 
-  const controlCheck = sections.some((element) => {
+  //Blank control check
+  const controlCheck = controls.some((element) => {
     return element === "";
   });
 
+  //Generic response for any failure
   if (name === "" || sectionCheck || controlCheck || uniqueValues) {
     return false;
   }
@@ -345,38 +336,47 @@ function dataCheck() {
 }
 function createNewClient() {
   const name = document.querySelector(".nameinput").value;
+
+  //Gather all inputted sections & controls. .length will match
   const sections = [...document.querySelectorAll(".sectioninput")].map(
     (input) => {
       return input.value;
     }
   );
-
   const controls = [...document.querySelectorAll(".numberinput")].map(
     (input) => {
       return input.value;
     }
   );
 
+  //Initialize the POJO for the new project/client
   const client = {
     name: name,
   };
 
+  //Create an array for each section, fill it with appropriate # of template control data
   for (let i = 0; i < sections.length; i++) {
     let section = [];
     for (let j = 0; j < controls[i]; j++) {
       section.push([false, 0, 0, 0, ""]);
     }
+    //Add to client POJO
     client[sections[i]] = section;
   }
   return client;
 }
 
 function refreshHeader(flag) {
+  //Flag used to indicate if the contents of the header need to be redrawn (when adding a new project)
   if (flag) {
     document.querySelectorAll(".clientbutton").forEach((button) => {
+      //Remove event listeners to prevent memory leak
+      button.removeEventListener("click", handleClientClick);
       button.remove();
     });
   }
+
+  //Draw all projects to header
   clients.forEach((client, index) => {
     const headerItem = document.createElement("div");
     headerItem.classList.add("clientbutton");
@@ -390,25 +390,31 @@ function refreshHeader(flag) {
       .insertAdjacentElement("beforebegin", headerItem);
   });
 
+  //Handler for header client buttons
+  function handleClientClick(event) {
+    const button = event.currentTarget;
+    const id = button.getAttribute("data-clientId");
+    currentClient = id;
+    loadClient(id);
+    refreshElements(true);
+  }
+
+  //Add event listeners to all buttons
   document.querySelectorAll(".clientbutton").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = button.getAttribute("data-clientId");
-      currentClient = id;
-      loadClient(id);
-      refreshElements(true);
-    });
+    button.addEventListener("click", handleClientClick);
   });
 }
 
+//Locally save textarea contents
 function saveText(object) {
   const key = object.getAttribute("data-sec");
   const lineindex = object.getAttribute("data-lineindex");
   const storageindex = object.getAttribute("data-storageindex");
 
   clients[currentClient][key][lineindex][storageindex] = object.value;
-  // console.log(clients[currentClient]);
 }
 
+//Update the lineitem to be completely green if all 3 columns are marked green
 function updateRowBg(object) {
   const checkbox1 = Number(object.children[2].getAttribute("data-state"));
   const checkbox2 = Number(object.children[3].getAttribute("data-state"));
@@ -418,7 +424,7 @@ function updateRowBg(object) {
   if (checkbox1 === checkbox2 && checkbox2 === checkbox3 && checkbox1 === 1) {
     object.style.backgroundColor = colorCodes[1];
     noteBox.style.backgroundColor = colorCodes[1];
-    noteBox.style.color = "#a9a9a9";
+    noteBox.style.color = colorCodes[6];
   } else {
     object.style.backgroundColor = colorCodes[0];
     noteBox.style.backgroundColor = colorCodes[0];
@@ -427,6 +433,21 @@ function updateRowBg(object) {
 }
 
 function loadClient(clientId) {
+  //Remove event listeners from checkboxes
+  document.querySelectorAll(".checkbox").forEach((checkbox) => {
+    checkbox.removeEventListener("click", checkboxClickHandler);
+  });
+
+  //Remove event listeners from followups
+  document.querySelectorAll(".followup-marker").forEach((followupMarker) => {
+    followupMarker.removeEventListener("click", followupClickHandler);
+  });
+
+  //Remove event listeners from textboxes
+  document.querySelectorAll(".textbox").forEach((textbox) => {
+    textbox.removeEventListener("click", textboxInputHandler);
+  });
+  //Remove all dynamic content from page
   document.querySelectorAll(".sectionbox").forEach((box) => {
     box.remove();
   });
@@ -435,53 +456,66 @@ function loadClient(clientId) {
     spacer.remove();
   });
 
+  //Repopulate the page with the selected project/client's data
+
+  //Get all of the keys from the selected client, as they each represent a section
   const clientKeys = Object.keys(clients[clientId]);
-  const clientValues = Object.values(clients[clientId]);
 
   const numSections = clientKeys.length - 1;
   for (let i = 0; i < numSections; i++) {
+    //Encapsulate in a parent box for global CSS inheritance, and place the section into the DOM
     const box = createBox();
-    createHeader(box, clientKeys[i]);
+    createHeader(box, clientKeys[i]); //Section label
     for (let j = 1; j <= clients[clientId][clientKeys[i]].length; j++) {
-      const lineItem = createLineItem(box, clientKeys[i], j, clientId);
-      populateLineItem(
-        lineItem,
-        clients[clientId][clientKeys[i]],
-        j - 1,
-        clientKeys[i]
-      );
+      const lineItem = createLineItem(box, clientKeys[i], j, clientId); //Create dom elements and inject stored data
     }
     spacer(box);
   }
 
+  //Checkbox click handler
+  function checkboxClickHandler(event) {
+    const checkbox = event.currentTarget;
+    let state = Number(checkbox.getAttribute("data-state"));
+    rotateCheckbox(checkbox, state);
+    saveLocally();
+    const object = checkbox.parentElement;
+    updateRowBg(object);
+  }
+
+  //Add listeners to checkboxess
   document.querySelectorAll(".checkbox").forEach((checkbox) => {
-    checkbox.addEventListener("click", () => {
-      let state = Number(checkbox.getAttribute("data-state"));
-      rotateCheckbox(checkbox, state);
-      saveLocally();
-      const object = checkbox.parentElement;
-      updateRowBg(object);
-    });
+    checkbox.addEventListener("click", checkboxClickHandler);
   });
 
+  //Followup click handler
+  function followupClickHandler(event) {
+    const marker = event.currentTarget;
+    let state = marker.getAttribute("data-state");
+    rotateFollowup(marker, state);
+    saveLocally();
+    const object = marker.parentElement;
+    updateRowBg(object);
+  }
+
+  //Add listeners to followup markers
   document.querySelectorAll(".followup-marker").forEach((marker) => {
-    marker.addEventListener("click", () => {
-      let state = marker.getAttribute("data-state");
-      rotateFollowup(marker, state);
-      saveLocally();
-      const object = marker.parentElement;
-      updateRowBg(object);
-    });
+    marker.addEventListener("click", followupClickHandler);
   });
 
+  //Text input event handler
+  function textboxInputHandler(event) {
+    const textbox = event.currentTarget;
+    saveText(textbox);
+    saveLocally();
+  }
+
+  //Add listeners to inputboxes
   document.querySelectorAll(".textbox").forEach((textbox) => {
-    textbox.addEventListener("input", () => {
-      saveText(textbox);
-      saveLocally();
-    });
+    textbox.addEventListener("input", textboxInputHandler);
   });
 }
 
+//Toggle the new project window
 function togWindow() {
   const popupWindow = document.getElementById("popup");
   const content = document.getElementById("content");
@@ -500,89 +534,108 @@ function togWindow() {
   }
 }
 
+//Add additional sections handler
+function addInputLineHandler() {
+  document
+    .getElementById("inputsections")
+    .insertAdjacentHTML("afterend", addLineHTML);
+}
+
+//Subtract sections handler
+function subInputLineHandler() {
+  if (document.querySelectorAll(".inputline").length > 1) {
+    const lineitem = document
+      .querySelectorAll(".inputline")
+      .item(document.querySelectorAll(".inputline").length - 1);
+    lineitem.remove();
+  }
+}
+
+//Create new project/client
+function submitNewProject() {
+  if (dataCheck()) {
+    clients.push(createNewClient());
+    console.log(clients);
+    loadClient(clients.length - 1);
+    currentClient = clients.length - 1;
+    refreshElements(true);
+
+    //Restore window to original state
+    const inputs = document.querySelectorAll(".sectioninput");
+    const numinputs = document.querySelectorAll(".numberinput");
+
+    //Leave only one blank input
+    for (let i = inputs.length - 1; i >= 0; i--) {
+      i > 0 ? inputs[i].remove() : (inputs[i].value = "");
+      i > 0 ? numinputs[i].remove() : (numinputs[i].value = "");
+    }
+
+    document.querySelector(".nameinput").value = "";
+
+    saveLocally();
+    togWindow();
+  } else {
+    alert("Please fill out all fields, and do not duplicate section numbers!");
+  }
+}
+
+//Delete current project/client
+function deleteHandler() {
+  if (clients.length > 1) {
+    if (
+      confirm(`Are you sure you want to delete ${clients[currentClient].name}?`)
+    ) {
+      clients.splice(currentClient, 1);
+      saveLocally();
+      location.reload(true);
+    }
+  } else {
+    alert("You must have atleast one current project!");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+  //Check if user is using Chrome
   if (
     /Chrome/.test(navigator.userAgent) &&
     /Google Inc/.test(navigator.vendor)
   ) {
-    // User is using Chrome
-
-    clients.push(clientData);
+    //Chrome user
+    clients.push(clientData); //Initialize dummy data in the event localStorage need be initialized
     loadData();
     currentClient = clients.length - 1;
-    loadClient(currentClient);
+    loadClient(currentClient); //Draw interface from the data loaded from the endpoint
     refreshElements(false);
     saveLocally();
     console.log(clients);
 
-    //Add new client
+    //Toggle the add client/project window
     document.getElementById("addClient").addEventListener("click", () => {
       togWindow();
     });
-
     document.getElementById("closebutton").addEventListener("click", () => {
       togWindow();
     });
 
-    document.getElementById("deletebutton").addEventListener("click", () => {
-      if (clients.length > 1) {
-        if (
-          confirm(
-            `Are you sure you want to delete ${clients[currentClient].name}?`
-          )
-        ) {
-          clients.splice(currentClient, 1);
-          saveLocally();
-          location.reload(true);
-        }
-      } else {
-        alert("You must have atleast one current project!");
-      }
-    });
+    //Delete the current client/project
+    document
+      .getElementById("deletebutton")
+      .addEventListener("click", deleteHandler);
 
-    document.getElementById("addline").addEventListener("click", () => {
-      document
-        .getElementById("inputsections")
-        .insertAdjacentHTML("afterend", addLineHTML);
-    });
+    //Support adding and subtracting additional sections
+    document
+      .getElementById("addline")
+      .addEventListener("click", addInputLineHandler);
+    document
+      .getElementById("subline")
+      .addEventListener("click", subInputLineHandler);
 
-    document.getElementById("subline").addEventListener("click", () => {
-      if (document.querySelectorAll(".inputline").length > 1) {
-        const lineitem = document
-          .querySelectorAll(".inputline")
-          .item(document.querySelectorAll(".inputline").length - 1);
-        lineitem.remove();
-      }
-    });
-
-    document.getElementById("submitbutton").addEventListener("click", () => {
-      if (dataCheck()) {
-        clients.push(createNewClient());
-        console.log(clients);
-        loadClient(clients.length - 1);
-        currentClient = clients.length - 1;
-        refreshElements(true);
-
-        //cleanup
-        const inputs = document.querySelectorAll(".sectioninput");
-        const numinputs = document.querySelectorAll(".numberinput");
-
-        for (let i = inputs.length - 1; i >= 0; i--) {
-          i > 0 ? inputs[i].remove() : (inputs[i].value = "");
-          i > 0 ? numinputs[i].remove() : (numinputs[i].value = "");
-        }
-
-        document.querySelector(".nameinput").value = "";
-
-        saveLocally();
-        togWindow();
-      } else {
-        alert(
-          "Please fill out all fields, and do not duplicate section numbers!"
-        );
-      }
-    });
+    //Create new client
+    document
+      .getElementById("submitbutton")
+      .addEventListener("click", submitNewProject);
   } else {
+    //Not chrome user
     alert("taskr currently only supports Google Chrome :(");
   }
 });
