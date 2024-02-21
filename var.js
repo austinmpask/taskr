@@ -26,6 +26,24 @@ export const clientData = {
   ],
 
   2: [
+    ,
+    [
+      false,
+      0,
+      0,
+      0,
+      `There are 3 columns available for every line item.\nEach column can represent anything. For example:\nPrepwork, Inquiry Notes, Inspection Notes`,
+    ],
+    [
+      false,
+      1,
+      2,
+      3,
+      `Click on any of your columns to set various status markers to track your completion.\nTry it out!`,
+    ],
+  ],
+
+  2: [
     [
       true,
       0,
