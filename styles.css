@@ -227,13 +227,13 @@ textarea:focus {
   border-radius: 20px;
   overflow: hidden;
   max-width: 850px;
-  transition: transform;
-  transition-duration: 200ms;
+  /* transition: transform;
+  transition-duration: 200ms; */
 }
 
-.sectionbox:hover {
+/* .sectionbox:hover {
   transform: scale(103%);
-}
+} */
 .container * {
   display: flex;
   align-items: center;
